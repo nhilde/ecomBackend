@@ -8,6 +8,7 @@ router.get('/', async (req, res) => {
   // find all products
   try {
     const allProducts = await Product.findAll({
+      attributes: ['id','product_name','price','stock','category_id'],
       include: [
         {
           model: Category,
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
         },
         {
           model: Tag,
-          attributes: ['tag_name', 'tag_id']
+          attributes: ['tag_name', 'id']
         }
       ]
     })
@@ -38,7 +39,7 @@ router.get('/:id', async (req, res) => {
         },
         {
           model: Tag,
-          attributes: ['tag_name', 'tag_id']
+          attributes: ['tag_name', 'id']
         }
       ]
     })
@@ -125,7 +126,17 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+  try {
+    Product.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+
 });
 
 module.exports = router;

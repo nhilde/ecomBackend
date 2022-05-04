@@ -5,7 +5,7 @@ const { Tag, Product, ProductTag } = require('../../models');
 
 router.get('/', async (req, res) => {
   try {
-    const allTags = Tag.findAll({
+    const allTags = await Tag.findAll({
       include: [
         {
           model: Product,
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     });
     res.json(allTags);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(400).json(err);
   }
   // find all tags
   // be sure to include its associated Product data
@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const tagData = await Category.findByPk(req.params.id, {
+    const tagData = await Tag.findByPk(req.params.id, {
       include: [
         {
           model: Product,
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   // create a new tag
   try {
     const newTag = await Tag.create({
@@ -54,30 +54,30 @@ router.post('/', (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const tagUpdate = await Tag.update({
+    const tagUpdate = await Tag.update(req.body, {
       where: {
-        tag_id: req.params.id,
+        id: req.params.id,
       },
     });
-    res.json(tagUpdate);
+    res.json({ message: "Tag Updated" });
   } catch (err) {
     res.status(500).json(err);
   }
-  
+
 });
 
 router.delete('/:id', (req, res) => {
   try {
-    Tag.delete({
+    Tag.destroy({
       where: {
-        tag_id: req.params.id,
+        id: req.params.id,
       },
     });
-    res.json(allTags);
+    res.json({ message: "Tag deleted" });
   } catch (err) {
     res.status(500).json(err);
   }
-  
+
 });
 
 module.exports = router;
